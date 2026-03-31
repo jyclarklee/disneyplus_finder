@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>나랑 닮은 디즈니 캐릭터는?</title>
 <style>
+/* 전반적인 스타일 정의 */
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#f5f5f5;color:#111;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;}
 .wrap{max-width:560px;width:100%;background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.07);}
@@ -21,51 +22,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sa
 .back-btn:hover{color:#555;}
 .result-card{background:#fff;border:1px solid #eee;border-radius:16px;padding:2rem;text-align:center;}
 
-/* 이미지 스타일 추가 */
+/* 이미지 스타일: 400x400 소스를 둥근 프레임에 맞춰 출력 */
 .char-img {
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 1.5rem;
-  border: 4px solid #EEEDFE;
+  border: 5px solid #EEEDFE;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.char-name{font-size:24px;font-weight:700;color:#111;margin-bottom:6px;}
-.char-badge{display:inline-block;background:#EEEDFE;color:#3C3489;font-size:12px;padding:3px 12px;border-radius:20px;margin-bottom:1rem;}
-.char-desc{font-size:15px;color:#555;line-height:1.8;margin-bottom:1.25rem;}
-.traits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:1.75rem;}
-.trait{background:#f4f4f4;color:#666;font-size:13px;padding:4px 14px;border-radius:20px;}
-.retry-btn{background:transparent;border:1px solid #ddd;border-radius:8px;padding:10px 28px;font-size:14px;color:#333;cursor:pointer;font-family:inherit;}
-.retry-btn:hover{background:#f4f4f4;}
+.char-name{font-size:26px;font-weight:700;color:#111;margin-bottom:6px;}
+.char-badge{display:inline-block;background:#EEEDFE;color:#3C3489;font-size:13px;padding:4px 14px;border-radius:20px;margin-bottom:1.2rem;font-weight:600;}
+.char-desc{font-size:15px;color:#555;line-height:1.8;margin-bottom:1.5rem;word-break:keep-all;}
+.traits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:2rem;}
+.trait{background:#f4f4f4;color:#666;font-size:13px;padding:5px 15px;border-radius:20px;}
+.retry-btn{background:#7F77DD;border:none;border-radius:10px;padding:12px 30px;font-size:15px;color:#fff;cursor:pointer;font-family:inherit;font-weight:600;transition: opacity 0.2s;}
+.retry-btn:hover{opacity:0.9;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="title">나랑 닮은 디즈니 캐릭터는?</div>
-  <div class="subtitle">8가지 질문으로 찾아보세요</div>
+  <div class="subtitle">8가지 질문으로 나의 내면을 찾아보세요</div>
   <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
   <div id="quiz-area"></div>
   <div id="result-area" style="display:none;"></div>
 </div>
 
 <script>
-// 검색된 이미지 URL 객체
+// 위키미디어 기반의 안정적인 이미지 URL 데이터
 const IMG_URLS = {
-  elsa: "http://googleusercontent.com/image_collection/image_retrieval/4193606564274232689_0",
-  moana: "http://googleusercontent.com/image_collection/image_retrieval/15534569567027914878_0",
-  ariel: "http://googleusercontent.com/image_collection/image_retrieval/14470382141290338752_0",
-  belle: "http://googleusercontent.com/image_collection/image_retrieval/6930066701030145905_0",
-  mickey: "http://googleusercontent.com/image_collection/image_retrieval/8154421083397695340_0",
-  simba: "http://googleusercontent.com/image_collection/image_retrieval/9701597661315261704_0",
-  olaf: "http://googleusercontent.com/image_collection/image_retrieval/15575957885732973451_0",
-  stitch: "http://googleusercontent.com/image_collection/image_retrieval/3193717857259181895_0",
-  woody: "http://googleusercontent.com/image_collection/image_retrieval/5094342609162712501_0",
-  buzz: "http://googleusercontent.com/image_collection/image_retrieval/4609752686389772568_0",
-  ironman: "http://googleusercontent.com/image_collection/image_retrieval/17316547204845403112_0",
-  yoda: "http://googleusercontent.com/image_collection/image_retrieval/14990733095461813582_0"
+  elsa: "https://upload.wikimedia.org/wikipedia/en/5/5e/Elsa_from_Disney%27s_Frozen.png",
+  moana: "https://upload.wikimedia.org/wikipedia/en/2/21/Moana_Disney_character.png",
+  ariel: "https://upload.wikimedia.org/wikipedia/en/7/77/Ariel_disney.png",
+  belle: "https://upload.wikimedia.org/wikipedia/en/d/d3/Belle_disney.png",
+  mickey: "https://upload.wikimedia.org/wikipedia/en/d/d4/Mickey_Mouse.png",
+  simba: "https://upload.wikimedia.org/wikipedia/en/9/94/Simba_Adult.png",
+  olaf: "https://upload.wikimedia.org/wikipedia/en/6/61/Olaf_from_Disney%27s_Frozen.png",
+  stitch: "https://upload.wikimedia.org/wikipedia/en/d/d3/Stitch_%28Lilo_%26_Stitch%29.png",
+  woody: "https://upload.wikimedia.org/wikipedia/en/0/01/Sheriff_Woody.png",
+  buzz: "https://upload.wikimedia.org/wikipedia/en/b/b4/Buzz_Lightyear.png",
+  ironman: "https://upload.wikimedia.org/wikipedia/en/4/47/Iron_Man_%28comic_book_character%29.jpg",
+  yoda: "https://upload.wikimedia.org/wikipedia/en/9/9b/Yoda_Empire_Strikes_Back.png"
 };
 
+// 질문 데이터
 const questions=[
   {q:"주말 오전, 나는 보통...",opts:[{text:"침대에서 뒹굴며 쉰다. 에너지 충전이 먼저!",val:"introvert"},{text:"친구에게 연락해서 뭔가 같이 한다",val:"extrovert"},{text:"혼자 산책이나 카페에서 여유를 즐긴다",val:"calm"},{text:"계획 세우고 할 일 목록 정리한다",val:"leader"}]},
   {q:"나를 한 단어로 표현한다면?",opts:[{text:"따뜻함",val:"warm"},{text:"용감함",val:"brave"},{text:"엉뚱함",val:"quirky"},{text:"충성스러움",val:"loyal"}]},
@@ -77,39 +80,45 @@ const questions=[
   {q:"나에게 가장 중요한 것은?",opts:[{text:"자유와 꿈을 향한 도전",val:"brave"},{text:"소중한 사람들과의 관계",val:"warm"},{text:"즐거움과 유머",val:"quirky"},{text:"책임과 의리",val:"loyal"}]}
 ];
 
+// 캐릭터 데이터 및 매칭 키워드
 const characters=[
-  {id:"elsa",name:"엘사",category:"디즈니 프린세스",desc:"강인하고 독립적이며, 내면의 힘을 믿는 당신. 때로는 혼자이지만 그 안에서 진정한 자신을 찾아가는 타입이에요.",traits:["독립적","강인함","감성적","성장형"],keys:["introvert","calm","leader"]},
-  {id:"moana",name:"모아나",category:"디즈니 프린세스",desc:"거침없는 도전 정신과 공동체를 향한 책임감. 바다처럼 넓은 마음으로 앞으로 나아가는 사람이에요.",traits:["용감함","리더십","책임감","모험심"],keys:["brave","leader","loyal"]},
-  {id:"ariel",name:"아리엘",category:"디즈니 프린세스",desc:"호기심 많고 새로운 세계에 빠져드는 당신. 규칙보다 꿈을 선택하는 자유로운 영혼이에요.",traits:["호기심","자유로움","열정","낙관적"],keys:["extrovert","brave","quirky"]},
-  {id:"belle",name:"벨",category:"디즈니 프린세스",desc:"지적이고 따뜻한 마음을 가진 당신. 겉모습보다 내면을 보는 깊이 있는 사람이에요.",traits:["지성","따뜻함","독립적","공감력"],keys:["calm","warm","introvert"]},
-  {id:"mickey",name:"미키 마우스",category:"클래식 캐릭터",desc:"밝고 긍정적인 에너지로 주변을 밝히는 당신. 어떤 상황에서도 유쾌함을 잃지 않아요.",traits:["명랑함","긍정적","사교적","활발함"],keys:["extrovert","quirky","warm"]},
-  {id:"simba",name:"심바",category:"인기 애니메이션",desc:"책임감 있는 리더로 성장하는 당신. 과거를 딛고 자신의 길을 당당히 걷는 타입이에요.",traits:["용기","성장","리더십","의리"],keys:["leader","brave","loyal"]},
-  {id:"olaf",name:"올라프",category:"인기 애니메이션",desc:"순수하고 유쾌한 당신. 따뜻한 유머로 주변 사람들을 웃게 만드는 사람이에요.",traits:["유머","순수함","낙관적","다정함"],keys:["quirky","warm","extrovert"]},
-  {id:"woody",name:"우디",category:"픽사 캐릭터",desc:"끝까지 책임지는 진짜 리더. 친구를 위해서라면 뭐든 하는 의리의 사나이예요.",traits:["책임감","의리","리더십","헌신"],keys:["loyal","leader","warm"]},
-  {id:"buzz",name:"버즈 라이트이어",category:"픽사 캐릭터",desc:"도전을 두려워하지 않는 당신. '무한하고 그 너머로!' — 한계를 믿지 않는 타입이에요.",traits:["도전정신","용감함","자신감","성실함"],keys:["brave","leader","loyal"]},
-  {id:"stitch",name:"스티치",category:"인기 애니메이션",desc:"엉뚱하지만 가족 같은 유대감을 소중히 여기는 당신. 겉은 독특해도 속은 따뜻해요.",traits:["유니크함","애정","충성심","엉뚱함"],keys:["quirky","loyal","introvert"]},
-  {id:"ironman",name:"아이언맨",category:"마블",desc:"천재적인 두뇌와 추진력을 겸비한 당신. 말보다 행동으로 증명하는 타입이에요.",traits:["천재성","추진력","자신감","창의성"],keys:["leader","brave","quirky"]},
-  {id:"yoda",name:"요다",category:"스타워즈",desc:"조용하지만 깊은 지혜를 가진 당신. 말 한마디에 무게가 있고 주변을 편안하게 만들어요.",traits:["지혜","침착함","관찰력","깊이"],keys:["calm","introvert","loyal"]}
+  {id:"elsa",name:"엘사",category:"디즈니 플러스",desc:"강인하고 독립적이며, 내면의 힘을 믿는 당신. 때로는 혼자이지만 그 안에서 진정한 자신을 찾아가는 타입이에요.",traits:["독립적","강인함","감성적","성장형"],keys:["introvert","calm","leader"]},
+  {id:"moana",name:"디즈니 플러스",category:"디즈니 프린세스",desc:"거침없는 도전 정신과 공동체를 향한 책임감. 바다처럼 넓은 마음으로 앞으로 나아가는 person이에요.",traits:["용감함","리더십","책임감","모험심"],keys:["brave","leader","loyal"]},
+  {id:"ariel",name:"아리엘",category:"디즈니 플러스",desc:"호기심 많고 새로운 세계에 빠져드는 당신. 규칙보다 꿈을 선택하는 자유로운 영혼이에요.",traits:["호기심","자유로움","열정","낙관적"],keys:["extrovert","brave","quirky"]},
+  {id:"belle",name:"벨",category:"디즈니 플러스",desc:"지적이고 따뜻한 마음을 가진 당신. 겉모습보다 내면을 보는 깊이 있는 사람이에요.",traits:["지성","따뜻함","독립적","공감력"],keys:["calm","warm","introvert"]},
+  {id:"mickey",name:"미키 마우스",category:"디즈니 플러스",desc:"밝고 긍정적인 에너지로 주변을 밝히는 당신. 어떤 상황에서도 유쾌함을 잃지 않아요.",traits:["명랑함","긍정적","사교적","활발함"],keys:["extrovert","quirky","warm"]},
+  {id:"simba",name:"심바",category:"디즈니 플러스",desc:"책임감 있는 리더로 성장하는 당신. 과거를 딛고 자신의 길을 당당히 걷는 타입이에요.",traits:["용기","성장","리더십","의리"],keys:["leader","brave","loyal"]},
+  {id:"olaf",name:"올라프",category:"디즈니 플러스",desc:"순수하고 유쾌한 당신. 따뜻한 유머로 주변 사람들을 웃게 만드는 사람이에요.",traits:["유머","순수함","낙관적","다정함"],keys:["quirky","warm","extrovert"]},
+  {id:"woody",name:"우디",category:"디즈니 플러스",desc:"끝까지 책임지는 진짜 리더. 친구를 위해서라면 뭐든 하는 의리의 사나이예요.",traits:["책임감","의리","리더십","헌신"],keys:["loyal","leader","warm"]},
+  {id:"buzz",name:"버즈 라이트이어",category:"디즈니 플러스",desc:"도전을 두려워하지 않는 당신. '무한하고 그 너머로!' — 한계를 믿지 않는 타입이에요.",traits:["도전정신","용감함","자신감","성실함"],keys:["brave","leader","loyal"]},
+  {id:"stitch",name:"스티치",category:"디즈니 플러스",desc:"엉뚱하지만 가족 같은 유대감을 소중히 여기는 당신. 겉은 독특해도 속은 따뜻해요.",traits:["유니크함","애정","충성심","엉뚱함"],keys:["quirky","loyal","introvert"]},
+  {id:"ironman",name:"아이언맨",category:"디즈니 플러스",desc:"천재적인 두뇌와 추진력을 겸비한 당신. 말보다 행동으로 증명하는 타입이에요.",traits:["천재성","추진력","자신감","창의성"],keys:["leader","brave","quirky"]},
+  {id:"yoda",name:"요다",category:"디즈니 플러스",desc:"조용하지만 깊은 지혜를 가진 당신. 말 한마디에 무게가 있고 주변을 편안하게 만들어요.",traits:["지혜","침착함","관찰력","깊이"],keys:["calm","introvert","loyal"]}
 ];
 
 let answers=[],current=0;
+
+// 결과 산출 로직: 선택한 답변 키워드와 가장 많이 일치하는 캐릭터 선택
 function scoreFn(c){let s=0;answers.forEach(v=>{if(c.keys.includes(v))s++;});return s;}
 function getResult(){let best=characters[0],bs=-1;characters.forEach(c=>{const s=scoreFn(c);if(s>bs){bs=s;best=c;}});return best;}
 
+// 질문 렌더링 함수
 function renderQ(){
   const q=questions[current];
   document.getElementById('prog').style.width=((current/questions.length)*100)+'%';
   document.getElementById('quiz-area').innerHTML=`
-    <div class="q-label">${current+1} / ${questions.length}</div>
+    <div class="q-label">질문 ${current+1} / ${questions.length}</div>
     <div class="q-text">${q.q}</div>
     <div class="options">${q.opts.map(o=>`<button class="opt-btn" onclick="choose('${o.val}')">${o.text}</button>`).join('')}</div>
-    ${current>0?`<div style="text-align:center;margin-top:1rem;"><button class="back-btn" onclick="goBack()">← 이전</button></div>`:''}
+    ${current>0?`<div style="text-align:center;margin-top:1.5rem;"><button class="back-btn" onclick="goBack()">← 이전 질문으로</button></div>`:''}
   `;
 }
 
+// 답변 선택 처리
 function choose(val){answers[current]=val;current++;if(current>=questions.length)showResult();else renderQ();}
 function goBack(){if(current>0){current--;renderQ();}}
 
+// 결과 화면 표시 함수
 function showResult(){
   document.getElementById('prog').style.width='100%';
   const c=getResult();
@@ -122,13 +131,16 @@ function showResult(){
       <div class="char-name">${c.name}</div>
       <div class="char-badge">${c.category}</div>
       <div class="char-desc">${c.desc}</div>
-      <div class="traits">${c.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div>
-      <button class="retry-btn" onclick="restart()">다시 해보기</button>
+      <div class="traits">${c.traits.map(t=>`<span class="trait">#${t}</span>`).join('')}</div>
+      <button class="retry-btn" onclick="restart()">테스트 다시하기</button>
     </div>
   `;
 }
 
+// 초기화 함수
 function restart(){answers=[];current=0;document.getElementById('result-area').style.display='none';document.getElementById('quiz-area').style.display='block';document.getElementById('prog').style.width='0%';renderQ();}
+
+// 첫 실행
 renderQ();
 </script>
 </body>
